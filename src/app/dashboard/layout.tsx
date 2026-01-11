@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useRequireAdmin } from "@/hooks/use-auth";
+import { useRequireAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { session, isPending } = useRequireAdmin();
+  const { session, isPending } = useRequireAuth();
   const pathname = usePathname();
 
   if (isPending) {

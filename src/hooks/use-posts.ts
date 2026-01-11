@@ -1,6 +1,11 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import api from "@/lib/api";
 import type { Post, PostsResponse } from "@/types";
 
@@ -11,6 +16,8 @@ interface PostsParams {
   tags?: string;
   isFeatured?: boolean;
   status?: string;
+  sortBy?: string;
+  sortOrder?: "desc" | "asc";
 }
 
 export function usePosts(params?: PostsParams) {
@@ -19,6 +26,25 @@ export function usePosts(params?: PostsParams) {
     queryFn: async () => {
       const { data } = await api.get<PostsResponse>("/posts", { params });
       return data;
+    },
+  });
+}
+
+export function useInfinitePosts(params?: Omit<PostsParams, "page">) {
+  return useInfiniteQuery({
+    queryKey: ["posts-infinite", params],
+    initialPageParam: 1,
+    queryFn: async ({ pageParam = 1 }) => {
+      const { data } = await api.get<PostsResponse>("/posts", {
+        params: { ...params, page: pageParam },
+      });
+      return data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.meta.page < lastPage.meta.totalPages) {
+        return lastPage.meta.page + 1;
+      }
+      return undefined;
     },
   });
 }

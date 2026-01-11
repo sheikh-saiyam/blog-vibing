@@ -18,6 +18,23 @@ export function useAuth(requireAuth = false) {
   return { session, isPending };
 }
 
+export function useRequireAuth() {
+  const { session, isPending } = useAuth(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isPending) return;
+
+    if (!session) return;
+
+    if (!session.user.role) {
+      redirect("/");
+    }
+  }, [session, isPending, router]);
+
+  return { session, isPending };
+}
+
 export function useRequireAdmin() {
   const { session, isPending } = useAuth(true);
   const router = useRouter();
