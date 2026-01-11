@@ -28,8 +28,8 @@ export default function NewPostPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Create Post</h1>
+      <div className="space-y-1">
+        <h1 className="text-4xl font-bold tracking-tight">Create Post</h1>
         <p className="text-muted-foreground">Write and publish a new article</p>
       </div>
 

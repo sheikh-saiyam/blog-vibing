@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Providers } from "@/components/providers";
+import { Toaster } from "sonner";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -44,6 +45,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
+          <Toaster />
           <Navbar />
           <main className="min-h-screen bg-background">{children}</main>
         </Providers>
