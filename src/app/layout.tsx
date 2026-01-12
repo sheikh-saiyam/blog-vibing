@@ -5,13 +5,14 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Providers } from "@/components/providers";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BLOG VIBING",
+  title: "BLOG VIBING",
   description: "A modern blog platform with authentication and commenting",
   generator: "v0.app",
   icons: {
@@ -39,16 +40,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`font-sans antialiased ${_geist.className} ${_geistMono.className}`}
         suppressHydrationWarning
       >
-        <Providers>
-          <Toaster />
-          <Navbar />
-          <main className="min-h-screen bg-background">{children}</main>
-        </Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <Providers>
+            <Toaster />
+            <Navbar />
+            <main className="min-h-screen bg-background">{children}</main>
+          </Providers>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

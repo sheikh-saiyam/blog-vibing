@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut, useSession } from "@/lib/auth";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Bell, Edit } from "lucide-react";
@@ -83,13 +84,7 @@ export function Navbar() {
                 <span className="text-sm">Write</span>
               </Link>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <Bell className="w-5 h-5" />
-              </Button>
+              <ThemeToggle />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -147,6 +142,8 @@ export function Navbar() {
             </>
           ) : (
             <>
+              <ThemeToggle />
+
               <Link href="/login">
                 <Button
                   variant="ghost"

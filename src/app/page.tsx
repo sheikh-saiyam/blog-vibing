@@ -140,7 +140,7 @@ export default function Home() {
                     <Link href={`/posts/${post.id}`} className="block">
                       <div className="flex justify-between gap-8">
                         <div className="space-y-2 max-w-2xl">
-                          <h2 className="text-xl md:text-2xl font-bold leading-tight font-serif group-hover:underline decoration-black underline-offset-4 decoration-2">
+                          <h2 className="text-xl md:text-2xl font-bold leading-tight font-serif group-hover:underline decoration-foreground underline-offset-4 decoration-2">
                             {post.title}
                           </h2>
                           <p className="text-muted-foreground line-clamp-3 md:line-clamp-2 md:text-base text-sm leading-relaxed font-serif">
