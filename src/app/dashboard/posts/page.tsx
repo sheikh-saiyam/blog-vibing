@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,6 +25,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { ConfirmModal } from "@/components/shared/confirm-modal";
 
 const container = {
   hidden: { opacity: 0 },
@@ -186,7 +178,17 @@ export default function MyPostsPage() {
 }
 
 function PostCard({ post }: { post: Post }) {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const deletePost = useDeletePost(post.id);
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deletePost.mutateAsync();
+      setDeleteModalOpen(false);
+    } catch (error) {
+      // toast is likely handled by hook or naturally
+    }
+  };
 
   return (
     <motion.div variants={item} layout>
@@ -276,42 +278,25 @@ function PostCard({ post }: { post: Post }) {
               </Button>
             </Link>
 
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex-1 sm:flex-none gap-2 rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  Delete
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-2xl border-none shadow-2xl">
-                <AlertDialogTitle className="text-xl">
-                  Delete post?
-                </AlertDialogTitle>
-                <AlertDialogDescription className="text-base py-2">
-                  Are you sure you want to delete{" "}
-                  <span className="font-bold text-foreground">
-                    "{post.title}"
-                  </span>
-                  ? This action is permanent and cannot be undone.
-                </AlertDialogDescription>
-                <div className="flex gap-3 justify-end pt-4">
-                  <AlertDialogCancel className="rounded-xl border-none bg-muted hover:bg-muted/80">
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => deletePost.mutate()}
-                    disabled={deletePost.isPending}
-                    className="rounded-xl bg-destructive hover:bg-destructive/90 shadow-lg shadow-destructive/20"
-                  >
-                    {deletePost.isPending ? "Deleting..." : "Delete Post"}
-                  </AlertDialogAction>
-                </div>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 sm:flex-none gap-2 rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive transition-all"
+              onClick={() => setDeleteModalOpen(true)}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+
+            <ConfirmModal
+              isOpen={deleteModalOpen}
+              onClose={() => setDeleteModalOpen(false)}
+              onConfirm={handleConfirmDelete}
+              title={`Delete post "${post.title}"?`}
+              description="This action is permanent and cannot be undone. All content, images, and engagement data will be lost."
+              confirmText="Delete Post"
+              isLoading={deletePost.isPending}
+            />
           </div>
         </div>
       </Card>

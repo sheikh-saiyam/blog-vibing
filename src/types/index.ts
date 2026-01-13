@@ -83,3 +83,33 @@ export interface StatsResponse {
     };
   };
 }
+
+export interface GetALlCommentsParams {
+  postId?: string | undefined;
+  authorId?: string | undefined;
+  status?: CommentStatus;
+  page?: number;
+  limit?: number;
+  orderBy?: { [key: string]: "asc" | "desc" } | undefined;
+  search?: string | undefined;
+}
+
+export interface CommentWithPost extends Comment {
+  post: {
+    id: string;
+    title: string;
+  };
+}
+
+export interface CommentsResponse {
+  success: boolean;
+  message: string;
+  meta: {
+    total: number;
+    page: number;
+    totalPages: number;
+    limit: number;
+    skip: number;
+  };
+  data: CommentWithPost[];
+}

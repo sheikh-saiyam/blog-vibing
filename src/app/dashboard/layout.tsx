@@ -1,19 +1,13 @@
 "use client";
 
-import type React from "react";
-import { useRequireAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRequireAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { FileText, LayoutDashboard, PenSquare, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
-import {
-  LayoutDashboard,
-  FileText,
-  PenSquare,
-  Settings,
-  User,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import type React from "react";
 
 const sidebarLinks = [
   {
@@ -32,11 +26,14 @@ const sidebarLinks = [
     icon: PenSquare,
   },
   {
-    name: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
+    name: "Comments",
+    href: "/dashboard/admin",
+    icon: MessageSquare,
+    adminOnly: true,
   },
 ];
+
+import { MessageSquare } from "lucide-react";
 
 export default function DashboardLayout({
   children,
@@ -91,41 +88,45 @@ export default function DashboardLayout({
               </div>
 
               <nav className="p-2 space-y-1">
-                {sidebarLinks.map((link) => {
-                  const isActive =
-                    pathname === link.href ||
-                    (link.href !== "/dashboard" &&
-                      link.href === pathname.split("/")[2]);
+                {sidebarLinks
+                  .filter(
+                    (link) => !link.adminOnly || session?.user?.role === "ADMIN"
+                  )
+                  .map((link) => {
+                    const isActive =
+                      pathname === link.href ||
+                      (link.href !== "/dashboard" &&
+                        pathname.startsWith(link.href));
 
-                  return (
-                    <Link key={link.href} href={link.href}>
-                      <button
-                        className={cn(
-                          "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group relative",
-                          isActive
-                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                            : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        <link.icon
+                    return (
+                      <Link key={link.href} href={link.href}>
+                        <button
                           className={cn(
-                            "h-4 w-4 transition-colors",
+                            "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group relative",
                             isActive
-                              ? "text-primary-foreground"
-                              : "text-muted-foreground group-hover:text-primary"
+                              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                              : "hover:bg-muted text-muted-foreground hover:text-foreground"
                           )}
-                        />
-                        {link.name}
-                        {isActive && (
-                          <motion.div
-                            layoutId="active-pill"
-                            className="absolute left-0 w-1 h-6 bg-primary-foreground rounded-r-full"
+                        >
+                          <link.icon
+                            className={cn(
+                              "h-4 w-4 transition-colors",
+                              isActive
+                                ? "text-primary-foreground"
+                                : "text-muted-foreground group-hover:text-primary"
+                            )}
                           />
-                        )}
-                      </button>
-                    </Link>
-                  );
-                })}
+                          {link.name}
+                          {isActive && (
+                            <motion.div
+                              layoutId="active-pill"
+                              className="absolute left-0 w-1 h-6 bg-primary-foreground rounded-r-full"
+                            />
+                          )}
+                        </button>
+                      </Link>
+                    );
+                  })}
               </nav>
 
               <div className="p-4 border-t border-border/40 mt-2">
