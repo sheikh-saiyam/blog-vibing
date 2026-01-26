@@ -1,13 +1,18 @@
 "use client";
 
-import { useRequireAdmin } from "@/hooks/use-auth";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
+import { ConfirmModal } from "@/components/shared/confirm-modal";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
-  useAllComments,
-  useUpdateCommentStatus,
-  useDeleteComment,
-} from "@/hooks/use-comments";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -16,33 +21,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import useAuth from "@/hooks/use-auth";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+  useAllComments,
+  useDeleteComment,
+  useUpdateCommentStatus,
+} from "@/hooks/use-comments";
+import { cn } from "@/lib/utils";
+import { CommentStatus } from "@/types";
 import { format } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle2,
-  XCircle,
-  Trash2,
-  Search,
-  MessageSquare,
   ChevronLeft,
   ChevronRight,
   Filter,
+  MessageSquare,
+  Search,
+  Trash2,
+  XCircle,
 } from "lucide-react";
-import { CommentStatus } from "@/types";
+import { useState } from "react";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { ConfirmModal } from "@/components/shared/confirm-modal";
-import { cn } from "@/lib/utils";
 
 const container = {
   hidden: { opacity: 0 },
@@ -60,7 +60,7 @@ const item = {
 };
 
 export default function AdminCommentsPage() {
-  const { session, isPending } = useRequireAdmin();
+  const { user, isPending } = useAuth();
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -84,7 +84,7 @@ export default function AdminCommentsPage() {
 
   const handleUpdateStatus = (
     id: string,
-    newStatus: "APPROVED" | "REJECTED"
+    newStatus: "APPROVED" | "REJECTED",
   ) => {
     toast.promise(updateStatusMutation.mutateAsync({ id, status: newStatus }), {
       loading: "Updating status...",
@@ -122,8 +122,6 @@ export default function AdminCommentsPage() {
       </div>
     );
   }
-
-  if (!session) return null;
 
   const comments = data?.data || [];
   const meta = data?.meta;
@@ -297,7 +295,7 @@ export default function AdminCommentsPage() {
                             "capitalize font-bold text-[10px] px-2 py-0.5 rounded-full border-none",
                             comment.status === "APPROVED"
                               ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10"
-                              : "bg-rose-50 text-rose-600 dark:bg-rose-500/10"
+                              : "bg-rose-50 text-rose-600 dark:bg-rose-500/10",
                           )}
                         >
                           {comment.status.toLowerCase()}
@@ -381,7 +379,7 @@ export default function AdminCommentsPage() {
                       "h-8 w-8 rounded-lg text-[11px] font-bold transition-all shadow-sm",
                       page === i + 1
                         ? "bg-primary text-primary-foreground shadow-primary/20 scale-110"
-                        : "hover:bg-muted bg-card border border-border/40"
+                        : "hover:bg-muted bg-card border border-border/40",
                     )}
                   >
                     {i + 1}

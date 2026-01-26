@@ -49,21 +49,23 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
-    const id = toast.loading("Verifying your credentials...");
     try {
       const result = await signIn.email({
         email: data.email,
         password: data.password,
       });
 
-      if (result) {
-        toast.success("Welcome back!", { id });
+      if (result.error) {
+        toast.error(result.error.message);
+      }
+
+      if (result.data && result.data.user.id) {
+        toast.success("Welcome back!");
         router.push("/dashboard");
       }
     } catch (error: any) {
       toast.error(
         error?.message || "Invalid email or password. Please try again.",
-        { id }
       );
     } finally {
       setIsLoading(false);
@@ -79,14 +81,6 @@ export default function LoginPage() {
         className="w-full max-w-[420px]"
       >
         <div className="text-center mb-10 space-y-3">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-2 shadow-inner"
-          >
-            <Lock className="h-8 w-8" />
-          </motion.div>
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

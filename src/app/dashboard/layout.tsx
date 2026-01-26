@@ -1,7 +1,6 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRequireAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { FileText, LayoutDashboard, PenSquare, User } from "lucide-react";
@@ -33,6 +32,7 @@ const sidebarLinks = [
   },
 ];
 
+import useAuth from "@/hooks/use-auth";
 import { MessageSquare } from "lucide-react";
 
 export default function DashboardLayout({
@@ -40,7 +40,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { session, isPending } = useRequireAuth();
+  const { user, isPending } = useAuth();
   const pathname = usePathname();
 
   if (isPending) {
@@ -55,10 +55,6 @@ export default function DashboardLayout({
         </div>
       </div>
     );
-  }
-
-  if (!session) {
-    return null;
   }
 
   return (
@@ -77,11 +73,9 @@ export default function DashboardLayout({
                     <User className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate">
-                      {session.user.name}
-                    </p>
+                    <p className="text-sm font-bold truncate">{user?.name}</p>
                     <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold truncate">
-                      {session.user.role}
+                      {user?.role}
                     </p>
                   </div>
                 </div>
@@ -89,9 +83,7 @@ export default function DashboardLayout({
 
               <nav className="p-2 space-y-1">
                 {sidebarLinks
-                  .filter(
-                    (link) => !link.adminOnly || session?.user?.role === "ADMIN"
-                  )
+                  .filter((link) => !link.adminOnly || user?.role === "ADMIN")
                   .map((link) => {
                     const isActive =
                       pathname === link.href ||
@@ -105,7 +97,7 @@ export default function DashboardLayout({
                             "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group relative",
                             isActive
                               ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                              : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                              : "hover:bg-muted text-muted-foreground hover:text-foreground",
                           )}
                         >
                           <link.icon
@@ -113,7 +105,7 @@ export default function DashboardLayout({
                               "h-4 w-4 transition-colors",
                               isActive
                                 ? "text-primary-foreground"
-                                : "text-muted-foreground group-hover:text-primary"
+                                : "text-muted-foreground group-hover:text-primary",
                             )}
                           />
                           {link.name}
