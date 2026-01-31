@@ -51,13 +51,17 @@ export default function LoginPage() {
     setIsLoading(true);
     const id = toast.loading("Verifying your credentials...");
     try {
-      const result = await signIn.email({
+     const result = await signIn.email({
         email: data.email,
         password: data.password,
       });
 
-      if (result) {
-        toast.success("Welcome back!", { id });
+      if (result.error) {
+        toast.error(result.error.message);
+      }
+
+      if (result.data && result.data.user.id) {
+        toast.success("Welcome back!");
         router.push("/dashboard");
       }
     } catch (error: any) {
